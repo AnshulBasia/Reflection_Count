@@ -11,13 +11,14 @@
 struct data
 {
 	int sequence_number;  //identifier
-	time_t time;//time
+	char time[1024];//time
 	int rc;  //an even non neg. integer
 };
 int main(int argc, char *argv[])
 {
 	int sockid,portno;		//Socket Descriptor like a file handle and port number to be used
-	struct sockaddr_in serv_addr;
+	 socklen_t server_ad;
+	struct sockaddr_in serv_addr,client_addr;
 	/*
 	struct in_addr
 	 {
@@ -76,43 +77,61 @@ int main(int argc, char *argv[])
     //if connection successful->
     //ASK for the message from user which is to be sent to server
    
-    data d;
+    struct data d;
+    struct data *ptr;
+    ptr=&d;
     char seq[1024];
     printf("Enter the identifier for message (less than 1000 characters)\n");
     
     gets(seq);
-    int n= sendto(sockid,seq,strlen(seq)+1,0,(struct sockaddr*) &serv_addr,sizeof(serv_addr));
+    int n;
+ /*   n= sendto(sockid,seq,strlen(seq)+1,0,(struct sockaddr*) &serv_addr,sizeof(serv_addr));
     if(n<0)
     {
     	perror("There was some error writing data to socket");
     	exit(1);
     }
+    */
     d.sequence_number=atoi(seq);
-    d.time=time(0);
-    printf("time\n");
+   	//printf("%d\n",ptr->sequence_number );
+    //printf("time\n");
     time_t now=time(NULL);
-    printf("%s", ctime(&now));
-    //snprintf(seq, 1024, "%d", ctime(&now));
-    strftime(seq, 20, "%Y-%m-%d %H:%M:%S", localtime(&now));
+     
+    server_ad=sizeof(serv_addr);	//size of in-out parameter
+   // snprintf(seq, 1024, "%d", ctime(&now));
+   strftime(seq, 20, "%Y-%m-%d %H:%M:%S", localtime(&now));
     //seq=(string)time(0);
-    printf("%s\n",seq );
+    
+    strcpy(d.time,seq);
+    printf("%s\n",d.time );
+    /*
     n= sendto(sockid,seq,strlen(seq)+1,0,(struct sockaddr*) &serv_addr,sizeof(serv_addr));
     if(n<0)
     {
     	perror("There was some error writing data to socket");
     	exit(1);
     }
-
+    */
+	
     printf("Enter the reflection count\n");
     gets(seq);
     d.rc=atoi(seq);
-   
-    n= sendto(sockid,seq,strlen(seq)+1,0,(struct sockaddr*) &serv_addr,sizeof(serv_addr));
+   //	printf("%d\n",d.rc );
+   	//printf("%d\n",d.time);
+    n= sendto(sockid,(struct data *)&d,1024+sizeof(d),0,(struct sockaddr*) &serv_addr,sizeof(serv_addr));
     if(n<0)
     {
     	perror("There was some error writing data to socket");
     	exit(1);
     }
+    if(recvfrom(sockid,(struct data *)&d,1024+sizeof(d),0,(struct sockaddr *) &serv_addr, &server_ad)<0)
+    	{
+    		perror("receiving falied");
+    	}
+    	printf("Received: %d\n",d.sequence_number );
+        
+        printf("%d\n",d.time);
+        printf("%d\n",d.rc );
 
     //close(sockid);
     //exit(0);
