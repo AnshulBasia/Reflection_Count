@@ -11,7 +11,7 @@
 struct data
 {
 	int sequence_number;  //identifier
-	char time[1024];//time
+	char time[50];//time
 	int rc;  //an even non neg. integer
 };
 int main(int argc, char *argv[])
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 
 	if(argc<3)
 	{
-		fprintf(stderr,"To use type->  %s hostname port_number\n",argv[0]);
+		fprintf(stderr,"To use type->  %s hostname port_number packetsize (Should be from 100 to 1300) \n",argv[0]);
 		exit(0);
 	}
 
@@ -121,6 +121,8 @@ int main(int argc, char *argv[])
      int fix=d.rc;
 
     //sending p
+     int answer[16][50];
+     for(int p=100;p<=1500;p++){
      d.rc=p;
      n= sendto(sockid,(struct data *)&d,1024+sizeof(d),0,(struct sockaddr*) &serv_addr,sizeof(serv_addr));
     if(n<0)
@@ -161,6 +163,7 @@ int main(int argc, char *argv[])
     // printf("%s\n",seq);
      double rtt=0;
      rtt=difftime(received,now);
+     answer[p/100][i]=rtt;
      printf("RTT=%f\n",rtt );
 
 
@@ -180,5 +183,15 @@ int main(int argc, char *argv[])
 
     printf("%s,%d\n",d.sequence_number,d.time );
 	*/
+    p+=99;
+    }
 
+    for(int i=1;i<=15;i++)
+    {
+        for(int j=0;j<50;j++)
+        {
+            printf(" %d",answer[i][j] );
+        }
+        printf("\n");
+    }
 }

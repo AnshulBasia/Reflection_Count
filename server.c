@@ -11,7 +11,7 @@
 struct data
 {
 	int sequence_number;  //identifier
-	char time[1024];//time
+	char time[50];//time
 	int rc;  //an even non neg. integer
 };
 
@@ -52,17 +52,19 @@ int main( int argc, char *argv[] )
 
     socklen_t client_ad;
     client_ad=sizeof(client_addr);  //size of in-out parameter
+    while(1>0){
 
     if(recvfrom(sockid,d,1024+sizeof(*d),0,(struct sockaddr *) &client_addr, &client_ad)<0)
         {
             perror("receiving falied");
         }
         printf("Received\n");
-        printf(" Packet size being received is  press 1 to continue %d\n",d->rc );
+        printf(" Packet size being received is  %d\n",d->rc );
+        printf(" press 1 to continue... \n");
         int p=d->rc;
-
-        gets(port);
-        if(atoi(port)!=1){exit(1);}
+        if(p>1500){break;}
+        //gets(port);
+       // if(atoi(port)!=1){exit(1);}
     int i=0;
     for(;;)
     {	printf("hey\n");
@@ -88,5 +90,6 @@ int main( int argc, char *argv[] )
         exit(1);
     }
     }
-    printf("Completed\n");
+    printf("Completed %d\n",p);
+}
 }
