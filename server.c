@@ -51,7 +51,7 @@ int main( int argc, char *argv[] )
     //Wait for incoming connections i.e. start listening to clients
 
     socklen_t client_ad;
-    
+    int i=0;
     for(;;)
     {	printf("hey\n");
     	client_ad=sizeof(client_addr);	//size of in-out parameter
@@ -61,17 +61,20 @@ int main( int argc, char *argv[] )
     	{
     		perror("receiving falied");
     	}
-    	
-    	printf("Received: %d\n",d->sequence_number );
+    	printf("Received\n");
+    	printf(" %d\n",d->sequence_number );
         
         printf("%d\n",d->time);
         printf("%d\n",d->rc );
         d->rc=d->rc-1;
         n= sendto(sockid,d,1024+sizeof(*d),0,(struct sockaddr*) &client_addr,sizeof(client_addr));
+        if(d->rc==1){i++;} 
+        if(i==50){break;}
     if(n<0)
     {
         perror("There was some error writing data to socket");
         exit(1);
     }
     }
+    printf("Completed\n");
 }

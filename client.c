@@ -118,6 +118,9 @@ int main(int argc, char *argv[])
     d.rc=atoi(seq);
    //	printf("%d\n",d.rc );
    	//printf("%d\n",d.time);
+    int fix=d.rc;
+    for(int i=0;i<50;i++){ d.rc=fix;
+    while(d.rc>0){
     n= sendto(sockid,(struct data *)&d,1024+sizeof(d),0,(struct sockaddr*) &serv_addr,sizeof(serv_addr));
     if(n<0)
     {
@@ -128,10 +131,25 @@ int main(int argc, char *argv[])
     	{
     		perror("receiving falied");
     	}
-    	printf("Received: %d\n",d.sequence_number );
+        //printf("Received\n");
+    	//printf("%d\n",d.sequence_number );
         
-        printf("%d\n",d.time);
-        printf("%d\n",d.rc );
+       // printf("%d\n",d.time);
+       //printf("%d\n",d.rc );
+         d.rc=d.rc-1;
+    }
+
+    strftime(seq, 20, "%Y-%m-%d %H:%M:%S", localtime(&now));
+     //printf("%s\n",d.time );
+     time_t received=time(NULL);
+     strftime(seq, 20, "%Y-%m-%d %H:%M:%S", localtime(&received));
+    // printf("%s\n",seq);
+     double rtt=0;
+     rtt=difftime(received,now);
+     printf("RTT=%f\n",rtt );
+
+
+}
 
     //close(sockid);
     //exit(0);
