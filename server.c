@@ -51,13 +51,25 @@ int main( int argc, char *argv[] )
     //Wait for incoming connections i.e. start listening to clients
 
     socklen_t client_ad;
+    client_ad=sizeof(client_addr);  //size of in-out parameter
+
+    if(recvfrom(sockid,d,1024+sizeof(*d),0,(struct sockaddr *) &client_addr, &client_ad)<0)
+        {
+            perror("receiving falied");
+        }
+        printf("Received\n");
+        printf(" Packet size being received is  press 1 to continue %d\n",d->rc );
+        int p=d->rc;
+
+        gets(port);
+        if(atoi(port)!=1){exit(1);}
     int i=0;
     for(;;)
     {	printf("hey\n");
     	client_ad=sizeof(client_addr);	//size of in-out parameter
     	//printf("%n\n",recvfrom(sockid,&d,sizeof(d),0,(struct sockaddr *) &client_addr, &client_ad));
     	
-    	if(recvfrom(sockid,d,1024+sizeof(*d),0,(struct sockaddr *) &client_addr, &client_ad)<0)
+    	if(recvfrom(sockid,d,p+sizeof(*d),0,(struct sockaddr *) &client_addr, &client_ad)<0)
     	{
     		perror("receiving falied");
     	}
@@ -67,7 +79,7 @@ int main( int argc, char *argv[] )
         printf("%d\n",d->time);
         printf("%d\n",d->rc );
         d->rc=d->rc-1;
-        n= sendto(sockid,d,1024+sizeof(*d),0,(struct sockaddr*) &client_addr,sizeof(client_addr));
+        n= sendto(sockid,d,p+sizeof(*d),0,(struct sockaddr*) &client_addr,sizeof(client_addr));
         if(d->rc==1){i++;} 
         if(i==50){break;}
     if(n<0)

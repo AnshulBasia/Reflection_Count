@@ -55,6 +55,8 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
+    int p=atoi(argv[3]);
+
 	server=gethostbyname(argv[1]);  //From the host name provided, we get the server address using hostnet's database and gethostbyname function
 	
 	if(server==NULL) //checking host name
@@ -116,18 +118,31 @@ int main(int argc, char *argv[])
     printf("Enter the reflection count\n");
     gets(seq);
     d.rc=atoi(seq);
+     int fix=d.rc;
+
+    //sending p
+     d.rc=p;
+     n= sendto(sockid,(struct data *)&d,1024+sizeof(d),0,(struct sockaddr*) &serv_addr,sizeof(serv_addr));
+    if(n<0)
+    {
+        perror("There was some error writing data to socket");
+        exit(1);
+    }
+
+
+
    //	printf("%d\n",d.rc );
    	//printf("%d\n",d.time);
-    int fix=d.rc;
+    
     for(int i=0;i<50;i++){ d.rc=fix;
     while(d.rc>0){
-    n= sendto(sockid,(struct data *)&d,1024+sizeof(d),0,(struct sockaddr*) &serv_addr,sizeof(serv_addr));
+    n= sendto(sockid,(struct data *)&d,p+sizeof(d),0,(struct sockaddr*) &serv_addr,sizeof(serv_addr));
     if(n<0)
     {
     	perror("There was some error writing data to socket");
     	exit(1);
     }
-    if(recvfrom(sockid,(struct data *)&d,1024+sizeof(d),0,(struct sockaddr *) &serv_addr, &server_ad)<0)
+    if(recvfrom(sockid,(struct data *)&d,p+sizeof(d),0,(struct sockaddr *) &serv_addr, &server_ad)<0)
     	{
     		perror("receiving falied");
     	}
