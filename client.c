@@ -75,22 +75,48 @@ int main(int argc, char *argv[])
 
     //if connection successful->
     //ASK for the message from user which is to be sent to server
-    printf("Please enter the message:\n");
+   
     data d;
-    printf("Enter the identifier for message\n");
-    d.sequence_number=atoi(stdin);
-    printf("Enter the reflection count\n");
-    d.rc=atoi(stdin);
+    char seq[1024];
+    printf("Enter the identifier for message (less than 1000 characters)\n");
+    
+    gets(seq);
+    int n= sendto(sockid,seq,strlen(seq)+1,0,(struct sockaddr*) &serv_addr,sizeof(serv_addr));
+    if(n<0)
+    {
+    	perror("There was some error writing data to socket");
+    	exit(1);
+    }
+    d.sequence_number=atoi(seq);
     d.time=time(0);
-
-    int n=write(sockid,d,sizeof(d));
-
+    printf("time\n");
+    time_t now=time(NULL);
+    printf("%s", ctime(&now));
+    //snprintf(seq, 1024, "%d", ctime(&now));
+    strftime(seq, 20, "%Y-%m-%d %H:%M:%S", localtime(&now));
+    //seq=(string)time(0);
+    printf("%s\n",seq );
+    n= sendto(sockid,seq,strlen(seq)+1,0,(struct sockaddr*) &serv_addr,sizeof(serv_addr));
     if(n<0)
     {
     	perror("There was some error writing data to socket");
     	exit(1);
     }
 
+    printf("Enter the reflection count\n");
+    gets(seq);
+    d.rc=atoi(seq);
+   
+    n= sendto(sockid,seq,strlen(seq)+1,0,(struct sockaddr*) &serv_addr,sizeof(serv_addr));
+    if(n<0)
+    {
+    	perror("There was some error writing data to socket");
+    	exit(1);
+    }
+
+    //close(sockid);
+    //exit(0);
+    /*
     //read back from server
     data d2;
     n=read(sockid,d2,sizeof(d2));
@@ -101,6 +127,6 @@ int main(int argc, char *argv[])
     }
 
     printf("%s,%d\n",d.sequence_number,d.time );
-
+	*/
 
 }
