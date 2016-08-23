@@ -52,48 +52,46 @@ int main( int argc, char *argv[] )
 
     socklen_t client_ad;
     client_ad=sizeof(client_addr);  //size of in-out parameter
-    while(1>0)
-    {
+    while(1>0){
 
-        if(recvfrom(sockid,d,1024+sizeof(*d),0,(struct sockaddr *) &client_addr, &client_ad)<0)
-            {
-                perror("receiving falied");
-            }
-            printf("Received\n");
-            printf(" Packet size being received is  %d\n",d->rc );
-            printf(" press 1 to continue... \n");
-            int p=d->rc;
-          
-            //gets(port);
-           // if(atoi(port)!=1){exit(1);}
-        int i=0;
-        for(;;)
-        {	printf("hey\n");
-        	client_ad=sizeof(client_addr);	//size of in-out parameter
-        	//printf("%n\n",recvfrom(sockid,&d,sizeof(d),0,(struct sockaddr *) &client_addr, &client_ad));
-        	
-        	if(recvfrom(sockid,d,p+sizeof(*d),0,(struct sockaddr *) &client_addr, &client_ad)<0)
-        	{
-        		perror("receiving falied");
-        	}
-        	printf("Received\n");
-        	printf(" %d\n",d->sequence_number );
-            
-            printf("%d\n",d->time);
-            printf("%d\n",d->rc );
-            d->rc=d->rc-1;
-            n= sendto(sockid,d,p+sizeof(*d),0,(struct sockaddr*) &client_addr,sizeof(client_addr));
-            if(d->rc==1){i++;} 
-            if(i==50){break;}
-            if(n<0)
-            {
-                perror("There was some error writing data to socket");
-                exit(1);
-            }
+    if(recvfrom(sockid,d,1024+sizeof(*d),0,(struct sockaddr *) &client_addr, &client_ad)<0)
+        {
+            perror("receiving falied");
         }
-        printf("Completed %d\n",p);
-        if(p>=1500){break;}
+        printf("Received\n");
+        printf(" Packet size being received is  %d\n",d->rc );
+        printf(" press 1 to continue... \n");
+        int p=d->rc;
+        if(p>1500){break;}
+        //gets(port);
+       // if(atoi(port)!=1){exit(1);}
+    int i=0;
+    for(;;)
+    {	printf("hey\n");
+    	client_ad=sizeof(client_addr);	//size of in-out parameter
+    	//printf("%n\n",recvfrom(sockid,&d,sizeof(d),0,(struct sockaddr *) &client_addr, &client_ad));
+    	
+    	if(recvfrom(sockid,d,p+sizeof(*d),0,(struct sockaddr *) &client_addr, &client_ad)<0)
+    	{
+    		perror("receiving falied");
+    	}
+    	printf("Received\n");
+    	printf(" %d\n",d->sequence_number );
+        
+        printf("%d\n",d->time);
+        printf("%d\n",d->rc );
+        d->rc=d->rc-1;
+        n= sendto(sockid,d,p+sizeof(*d),0,(struct sockaddr*) &client_addr,sizeof(client_addr));
+        if(d->rc==1){i++;} 
+        if(i==50){break;}
+    if(n<0)
+    {
+        perror("There was some error writing data to socket");
+        exit(1);
     }
+    }
+    printf("Completed %d\n",p);
+}
 }
 
 /* 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 4 4 4 4 4 4 4

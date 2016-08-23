@@ -118,72 +118,72 @@ int main(int argc, char *argv[])
     printf("Enter the reflection count\n");
     gets(seq);
     d.rc=atoi(seq);
-     int fix=d.rc;
+    int fix=d.rc;
 
     //sending p
      int answer[16][50];
-     for(int p=100;p<=1500;p++){
-     d.rc=p;
-     n= sendto(sockid,(struct data *)&d,1024+sizeof(d),0,(struct sockaddr*) &serv_addr,sizeof(serv_addr));
-    if(n<0)
-    {
-        perror("There was some error writing data to socket");
-        exit(1);
-    }
+     for(int p=100;p<=1500;p++)
+     {
+        d.rc=p;
+        n= sendto(sockid,(struct data *)&d,1024+sizeof(d),0,(struct sockaddr*) &serv_addr,sizeof(serv_addr));
+        if(n<0)
+        {
+            perror("There was some error writing data to socket");
+            exit(1);
+        }
 
 
 
-   //	printf("%d\n",d.rc );
-   	//printf("%d\n",d.time);
-    
-    for(int i=0;i<50;i++){ d.rc=fix;
-    while(d.rc>0){
-    n= sendto(sockid,(struct data *)&d,p+sizeof(d),0,(struct sockaddr*) &serv_addr,sizeof(serv_addr));
-    if(n<0)
-    {
-    	perror("There was some error writing data to socket");
-    	exit(1);
-    }
-    if(recvfrom(sockid,(struct data *)&d,p+sizeof(d),0,(struct sockaddr *) &serv_addr, &server_ad)<0)
-    	{
-    		perror("receiving falied");
-    	}
-        //printf("Received\n");
-    	//printf("%d\n",d.sequence_number );
+        //	printf("%d\n",d.rc );
+       	//printf("%d\n",d.time);
         
-       // printf("%d\n",d.time);
-       //printf("%d\n",d.rc );
-         d.rc=d.rc-1;
-    }
+        for(int i=0;i<50;i++)
+        { 
+            d.rc=fix;
+            while(d.rc>0)
+            {
+                n= sendto(sockid,(struct data *)&d,p+sizeof(d),0,(struct sockaddr*) &serv_addr,sizeof(serv_addr));
+                if(n<0)
+                {
+                	perror("There was some error writing data to socket");
+                	exit(1);
+                }
+                if(recvfrom(sockid,(struct data *)&d,p+sizeof(d),0,(struct sockaddr *) &serv_addr, &server_ad)<0)
+                {
+                	perror("receiving falied");
+                }
+                    
+                d.rc=d.rc-1;
+            }
 
-    strftime(seq, 20, "%Y-%m-%d %H:%M:%S", localtime(&now));
-     //printf("%s\n",d.time );
-     time_t received=time(NULL);
-     strftime(seq, 20, "%Y-%m-%d %H:%M:%S", localtime(&received));
-    // printf("%s\n",seq);
-     double rtt=0;
-     rtt=difftime(received,now);
-     answer[p/100][i]=rtt;
-     printf("RTT=%f\n",rtt );
+            strftime(seq, 20, "%Y-%m-%d %H:%M:%S", localtime(&now));
+            //printf("%s\n",d.time );
+            time_t received=time(NULL);
+            strftime(seq, 20, "%Y-%m-%d %H:%M:%S", localtime(&received));
+            // printf("%s\n",seq);
+            double rtt=0;
+            rtt=difftime(received,now);
+            answer[p/100][i]=rtt;
+            printf("RTT=%f\n",rtt );
 
 
-}
+        }
 
-    //close(sockid);
-    //exit(0);
-    /*
-    //read back from server
-    data d2;
-    n=read(sockid,d2,sizeof(d2));
-    if(n<0)
-    {
-    	perror("there was error while reading back from socket we sent through");
-    	exit(1);
-    }
+        //close(sockid);
+        //exit(0);
+        /*
+        //read back from server
+        data d2;
+        n=read(sockid,d2,sizeof(d2));
+        if(n<0)
+        {
+        	perror("there was error while reading back from socket we sent through");
+        	exit(1);
+        }
 
-    printf("%s,%d\n",d.sequence_number,d.time );
-	*/
-    p+=99;
+        printf("%s,%d\n",d.sequence_number,d.time );
+    	*/
+        p+=99;
     }
 
     for(int i=1;i<=15;i++)
