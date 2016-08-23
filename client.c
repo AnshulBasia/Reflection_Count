@@ -9,6 +9,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include <inttypes.h>
+#include <sys/socket.h>
 struct data
 {
 	int sequence_number;  //identifier
@@ -109,19 +110,51 @@ int main(int argc, char *argv[])
 
     //sending p
      
-     struct timeval tv1,tv2;
+     struct timeval tv1,tv2,stime,rtime;
      gettimeofday(&tv1,NULL);
      uint64_t a=tv1.tv_sec*(uint64_t)1000000+tv1.tv_usec;
-     uint64_t b;
+     uint64_t b,c;
+     fd_set rfds;
+    struct timeval tv;
+    int retval;
+    tv.tv_sec=5;
+    tv.tv_usec=0;
+
      for(int p=100;p<=1500;)
      {
         d.rc=p;
+        printf("sending %d",p );
+        printf(" bytes\n");
         n= sendto(sockid,(struct data *)&d,1024+sizeof(d),0,(struct sockaddr*) &serv_addr,sizeof(serv_addr));
         if(n<0)
         {
             perror("There was some error writing data to socket");
             exit(1);
         }
+                FD_ZERO(&rfds);
+                FD_SET (sockid,&rfds);
+                tv.tv_sec=5;
+                tv.tv_usec=0;
+                retval=select(sockid+1,&rfds,NULL,NULL,&tv);
+  
+                if(retval==-1)
+                {
+                    perror("error in select\n");
+
+                }
+                if(retval==0)
+                {
+                    printf("TIMEOUT\n");
+                }
+                else
+                {
+                    if(recvfrom(sockid,(struct data *)&d,p+sizeof(d),0,(struct sockaddr *) &serv_addr, &server_ad)<0)
+                    {
+                        perror("receiving falied");
+                    }
+                        
+                    if(d.rc!=p){continue;}
+                }
 
 
 
@@ -133,18 +166,39 @@ int main(int argc, char *argv[])
             d.rc=fix;
             while(d.rc>0)
             {
+                
                 n= sendto(sockid,(struct data *)&d,p+sizeof(d),0,(struct sockaddr*) &serv_addr,sizeof(serv_addr));
                 if(n<0)
                 {
                 	perror("There was some error writing data to socket");
                 	exit(1);
                 }
-                if(recvfrom(sockid,(struct data *)&d,p+sizeof(d),0,(struct sockaddr *) &serv_addr, &server_ad)<0)
-                {
-                	perror("receiving falied");
-                }
+                
                     
-                d.rc=d.rc-1;
+                FD_ZERO(&rfds);
+                FD_SET (sockid,&rfds);
+                tv.tv_sec=5;
+                tv.tv_usec=0;
+                retval=select(sockid+1,&rfds,NULL,NULL,&tv);
+  
+                if(retval==-1)
+                {
+                    perror("error in select\n");
+
+                }
+                if(retval==0)
+                {
+                    printf("TIMEOUT\n");
+                }
+                else
+                {
+                    if(recvfrom(sockid,(struct data *)&d,p+sizeof(d),0,(struct sockaddr *) &serv_addr, &server_ad)<0)
+                    {
+                    	perror("receiving falied");
+                    }
+                        
+                    d.rc=d.rc-1;
+                }
             }
 
             
@@ -153,7 +207,7 @@ int main(int argc, char *argv[])
 
         gettimeofday(&tv2,NULL);
         b=tv2.tv_sec*(uint64_t)1000000+tv2.tv_usec;
-        printf("%" PRId64 "\n", b-a);
+        printf("RTT= %" PRId64 "\n", b-a);
         gettimeofday(&tv1,NULL);
         a=tv1.tv_sec*(uint64_t)1000000+tv1.tv_usec;
         now=time(NULL);
