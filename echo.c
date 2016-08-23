@@ -52,17 +52,40 @@ int main( int argc, char *argv[] )
 
     socklen_t client_ad;
     client_ad=sizeof(client_addr);  //size of in-out parameter
+    fd_set rfds;
+    struct timeval tv;
+    int retval;
+    tv.tv_sec=5;
+    tv.tv_usec=0;
+    int p=500;
+
     while(1>0)
     {
 
+        FD_ZERO(&rfds);
+        FD_SET(sockid,&rfds);
+        retval=select(sockid+1,&rfds,NULL,NULL,&tv);
+        printf("%d\n",retval );
+        if(retval==-1)
+        {
+            perror("error in select\n");
+
+        }
+        else if(retval)
+        {
+            printf("Data is available\n");
+        }
+        else
+        {
+            printf("TIMEOUT\n");
+        }
         if(recvfrom(sockid,d,1024+sizeof(*d),0,(struct sockaddr *) &client_addr, &client_ad)<0)
             {
                 perror("receiving falied");
             }
             printf("Received\n");
             printf(" Packet size being received is  %d\n",d->rc );
-            printf(" press 1 to continue... \n");
-            int p=d->rc;
+             p=d->rc;
           
             
         int i=0;
@@ -75,13 +98,11 @@ int main( int argc, char *argv[] )
         	{
         		perror("receiving falied");
         	}
-        	printf("Received\n");
-        	printf(" %d\n",d->sequence_number );
-            
-            printf("%d\n",d->time);
-            printf("%d\n",d->rc );
+        	//printf("Received\n");
+        	
             d->rc=d->rc-1;
             n= sendto(sockid,d,p+sizeof(*d),0,(struct sockaddr*) &client_addr,sizeof(client_addr));
+           // printf("SENT\n");
             if(d->rc==1){i++;} 
             if(i==50){break;}
             if(n<0)

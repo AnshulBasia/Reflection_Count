@@ -7,7 +7,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
-
+#include <sys/time.h>
+#include <inttypes.h>
 struct data
 {
 	int sequence_number;  //identifier
@@ -100,15 +101,19 @@ int main(int argc, char *argv[])
     strcpy(d.time,seq);
     printf("%s\n",d.time );
    
-	
+	double total=0;
     printf("Enter the reflection count\n");
     gets(seq);
     d.rc=atoi(seq);
     int fix=d.rc;
 
     //sending p
-     int answer[16][50];
-     for(int p=100;p<=1500;p++)
+     
+     struct timeval tv1,tv2;
+     gettimeofday(&tv1,NULL);
+     uint64_t a=tv1.tv_sec*(uint64_t)1000000+tv1.tv_usec;
+     uint64_t b;
+     for(int p=100;p<=1500;)
      {
         d.rc=p;
         n= sendto(sockid,(struct data *)&d,1024+sizeof(d),0,(struct sockaddr*) &serv_addr,sizeof(serv_addr));
@@ -142,29 +147,19 @@ int main(int argc, char *argv[])
                 d.rc=d.rc-1;
             }
 
-            strftime(seq, 20, "%Y-%m-%d %H:%M:%S", localtime(&now));
-            //printf("%s\n",d.time );
-            time_t received=time(NULL);
-            strftime(seq, 20, "%Y-%m-%d %H:%M:%S", localtime(&received));
-            // printf("%s\n",seq);
-            double rtt=0;
-            rtt=difftime(received,now);
-            answer[p/100][i]=rtt;
-            printf("RTT=%f\n",rtt );
-
+            
 
         }
 
-        
-        p+=99;
+        gettimeofday(&tv2,NULL);
+        b=tv2.tv_sec*(uint64_t)1000000+tv2.tv_usec;
+        printf("%" PRId64 "\n", b-a);
+        gettimeofday(&tv1,NULL);
+        a=tv1.tv_sec*(uint64_t)1000000+tv1.tv_usec;
+        now=time(NULL);
+        total=0;
+        p+=100;
     }
 
-    for(int i=1;i<=15;i++)
-    {
-        for(int j=0;j<50;j++)
-        {
-            printf(" %d",answer[i][j] );
-        }
-        printf("\n");
-    }
+    
 }
