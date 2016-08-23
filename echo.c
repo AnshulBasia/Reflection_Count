@@ -64,11 +64,10 @@ int main( int argc, char *argv[] )
             printf(" press 1 to continue... \n");
             int p=d->rc;
           
-            //gets(port);
-           // if(atoi(port)!=1){exit(1);}
+            
         int i=0;
         for(;;)
-        {	printf("hey\n");
+        {	
         	client_ad=sizeof(client_addr);	//size of in-out parameter
         	//printf("%n\n",recvfrom(sockid,&d,sizeof(d),0,(struct sockaddr *) &client_addr, &client_ad));
         	

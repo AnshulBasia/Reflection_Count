@@ -87,33 +87,19 @@ int main(int argc, char *argv[])
     
     gets(seq);
     int n;
- /*   n= sendto(sockid,seq,strlen(seq)+1,0,(struct sockaddr*) &serv_addr,sizeof(serv_addr));
-    if(n<0)
-    {
-    	perror("There was some error writing data to socket");
-    	exit(1);
-    }
-    */
+ 
     d.sequence_number=atoi(seq);
-   	//printf("%d\n",ptr->sequence_number );
-    //printf("time\n");
+   	
     time_t now=time(NULL);
      
     server_ad=sizeof(serv_addr);	//size of in-out parameter
-   // snprintf(seq, 1024, "%d", ctime(&now));
-   strftime(seq, 20, "%Y-%m-%d %H:%M:%S", localtime(&now));
+    
+    strftime(seq, 20, "%Y-%m-%d %H:%M:%S", localtime(&now));
     //seq=(string)time(0);
     
     strcpy(d.time,seq);
     printf("%s\n",d.time );
-    /*
-    n= sendto(sockid,seq,strlen(seq)+1,0,(struct sockaddr*) &serv_addr,sizeof(serv_addr));
-    if(n<0)
-    {
-    	perror("There was some error writing data to socket");
-    	exit(1);
-    }
-    */
+   
 	
     printf("Enter the reflection count\n");
     gets(seq);
@@ -169,20 +155,7 @@ int main(int argc, char *argv[])
 
         }
 
-        //close(sockid);
-        //exit(0);
-        /*
-        //read back from server
-        data d2;
-        n=read(sockid,d2,sizeof(d2));
-        if(n<0)
-        {
-        	perror("there was error while reading back from socket we sent through");
-        	exit(1);
-        }
-
-        printf("%s,%d\n",d.sequence_number,d.time );
-    	*/
+        
         p+=99;
     }
 
